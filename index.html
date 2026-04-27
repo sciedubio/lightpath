@@ -587,10 +587,6 @@
         setMousePos({ x, y });
       };
 
-      const handlePointerUp = () => {
-        setActiveNode(null); // Cancel dragging if dropped outside node
-      };
-
       const handleNodeDown = (e, nodeId) => {
         e.stopPropagation();
         if (isSuccess) return;
@@ -603,18 +599,30 @@
         setMousePos({ x, y });
       };
 
-      const handleNodeUp = (e, targetNodeId) => {
-        e.stopPropagation();
-        if (isSuccess) return;
-        
-        if (activeNode && activeNode !== targetNodeId) {
-          // Check if path already exists or reverse exists (directed graph usually, but let's prevent simple dupes)
-          const exists = paths.some(p => p.from === activeNode && p.to === targetNodeId);
-          if (!exists) {
-            setPaths([...paths, { from: activeNode, to: targetNodeId }]);
+      const handlePointerUp = () => {
+        if (activeNode) {
+          // Find which node we dropped on based on coordinates
+          let targetNodeId = null;
+          for (let i = 0; i < mission.nodes.length; i++) {
+            const node = mission.nodes[i];
+            const dx = mousePos.x - node.x;
+            const dy = mousePos.y - node.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            // Node hit radius extended to 55 for easier mobile touch
+            if (dist <= 55) {
+              targetNodeId = node.id;
+              break;
+            }
+          }
+
+          if (targetNodeId && targetNodeId !== activeNode) {
+            const exists = paths.some(p => p.from === activeNode && p.to === targetNodeId);
+            if (!exists) {
+              setPaths([...paths, { from: activeNode, to: targetNodeId }]);
+            }
           }
         }
-        setActiveNode(null);
+        setActiveNode(null); // Cancel dragging
       };
 
       const resetPaths = () => {
@@ -788,7 +796,6 @@
                        className="cursor-pointer transition-opacity duration-700"
                        style={{ opacity: nodeOpacity }}
                        onPointerDown={(e) => handleNodeDown(e, node.id)}
-                       onPointerUp={(e) => handleNodeUp(e, node.id)}
                     >
                       <circle cx="0" cy="0" r="35" 
                               fill="rgba(30,41,59,0.9)" 
