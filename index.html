@@ -165,8 +165,7 @@
       "3. 빛이 하나도 없는 곳에서 물체를 볼 수 있나요? 그 이유는 무엇일까요?",
       "4. 물체를 보기 위해서 반드시 필요한 것은 무엇인가요? 그 이유는 무엇인가요?",
       "5. 우리가 눈으로 물체를 보는 원리를 구체적으로 적어주세요.",
-      "6. 스마트폰에서 액정화면이 보이는 이유는 무엇일까요?",
-      "7. 영상('본다는 것은 무엇일까?')에서 말하고자 하는 건 무엇일까요?"
+      "6. 스마트폰에서 액정화면이 보이는 이유는 무엇일까요?"
     ];
 
     // ==========================================
@@ -214,7 +213,7 @@
     const AdminGuideModal = ({ isOpen, onClose }) => {
       if (!isOpen) return null;
       const copyCode = () => {
-        const code = `function doPost(e) {\n  try {\n    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n    const data = JSON.parse(e.postData.contents);\n    sheet.appendRow([\n      new Date(),\n      data.studentId || "",\n      data.studentName || "",\n      data.minValue ?? "",\n      data.maxValue ?? "",\n      data.quizScore ?? "",\n      data.q1 || "", data.q2 || "", data.q3 || "", data.q4 || "", data.q5 || "", data.q6 || "", data.q7 || ""\n    ]);\n    return ContentService.createTextOutput(JSON.stringify({result:"success"}))\n      .setMimeType(ContentService.MimeType.JSON);\n  } catch (err) {\n    return ContentService.createTextOutput(JSON.stringify({result:"error", message: err.message}))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n}`;
+        const code = `function doPost(e) {\n  try {\n    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n    const data = JSON.parse(e.postData.contents);\n    sheet.appendRow([\n      new Date(),\n      data.studentId || "",\n      data.studentName || "",\n      data.minValue ?? "",\n      data.maxValue ?? "",\n      data.quizScore ?? "",\n      data.q1 || "", data.q2 || "", data.q3 || "", data.q4 || "", data.q5 || "", data.q6 || ""\n    ]);\n    return ContentService.createTextOutput(JSON.stringify({result:"success"}))\n      .setMimeType(ContentService.MimeType.JSON);\n  } catch (err) {\n    return ContentService.createTextOutput(JSON.stringify({result:"error", message: err.message}))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n}`;
         
         // iframe 환경 호환성을 위해 execCommand('copy') 방식 사용
         const textArea = document.createElement("textarea");
@@ -247,7 +246,7 @@
               <section>
                 <h3 className="font-bold text-white mb-1">① 구글 시트 준비</h3>
                 <p>1행 헤더를 다음 순서로 작성하세요:<br/>
-                <code className="bg-black/50 px-2 py-1 rounded text-accent text-[11px] break-all">timestamp | studentId | studentName | min | max | quiz | Q1 | Q2 | Q3 | Q4 | Q5 | Q6 | Q7</code></p>
+                <code className="bg-black/50 px-2 py-1 rounded text-accent text-[11px] break-all">timestamp | studentId | studentName | min | max | quiz | Q1 | Q2 | Q3 | Q4 | Q5 | Q6</code></p>
               </section>
 
               <section>
@@ -264,7 +263,7 @@
       new Date(), data.studentId || "", data.studentName || "",
       data.minValue ?? "", data.maxValue ?? "",
       data.quizScore ?? "", 
-      data.q1||"", data.q2||"", data.q3||"", data.q4||"", data.q5||"", data.q6||"", data.q7||""
+      data.q1||"", data.q2||"", data.q3||"", data.q4||"", data.q5||"", data.q6||""
     ]);
     return ContentService.createTextOutput(JSON.stringify({result:"success"}))
       .setMimeType(ContentService.MimeType.JSON);
@@ -321,8 +320,8 @@
       const [answers, setAnswers] = useState(() => {
         try {
           const saved = localStorage.getItem('science_sim_answers');
-          return saved ? JSON.parse(saved) : Array(7).fill('');
-        } catch(e) { return Array(7).fill(''); }
+          return saved ? JSON.parse(saved) : Array(6).fill('');
+        } catch(e) { return Array(6).fill(''); }
       });
 
       const [quizQuests, setQuizQuests] = useState([]);
@@ -356,7 +355,7 @@
         }
 
         if (answers.some(a => a.trim() === '')) {
-          showAlert("활동지 질문 7개에 모두 답변을 작성해주세요.\n(어려운 질문은 간략하게라도 적어보세요!)");
+          showAlert("활동지 질문 6개에 모두 답변을 작성해주세요.\n(어려운 질문은 간략하게라도 적어보세요!)");
           return;
         }
         
@@ -384,7 +383,7 @@
           maxValue: missionRecords.length > 0 ? Math.max(...missionRecords) : 0,
           quizScore: currentScore,
           q1: answers[0], q2: answers[1], q3: answers[2], 
-          q4: answers[3], q5: answers[4], q6: answers[5], q7: answers[6]
+          q4: answers[3], q5: answers[4], q6: answers[5]
         };
 
         fetch(GOOGLE_SCRIPT_URL, {
